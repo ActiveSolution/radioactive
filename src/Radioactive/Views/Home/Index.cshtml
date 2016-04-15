@@ -1,11 +1,52 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8" />
     <title>Radioactive</title>
     <link rel="stylesheet" type="text/css" href="~/css/normalize.css"/>
     <link rel="stylesheet" type="text/css" href="~/css/site.css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans&amp;subset=latin" rel="stylesheet" type="text/css" />
+    <link href="http://fonts.googleapis.com/css?family=Lato:300&amp;subset=latin" rel="stylesheet" type="text/css" />
+    <script src="http://code.responsivevoice.org/responsivevoice.js"></script>
+    <script type="text/javascript">
+        var options = { rate: 1.5};
+        var voice = "Swedish Female";
+
+        var texts = {
+            intro: [
+                "Radioactive, din kajplats i etern!",
+                "Radioactive, ditt ljus i mörket!",
+                "Radioactive, din mistlur i dimman"
+            ],
+            welcome: [
+                "Välkommen till Radioactive i Dublin",
+                "Årets konferans presenteras i sammarbete av Radioactive"
+            ],
+            introSong: [
+                "Nästa låt som ska spelas är {song} som framförs av {artist}!"
+            ]
+        };
+
+        function getRandomPart(parts) {
+            return parts[Math.floor(Math.random() * parts.length)];
+        }
+
+        function speakIt(text, callback) {
+            responsiveVoice.speak(text, voice, options);
+        }
+
+        function speak() {
+            var text = getRandomPart(texts.intro);
+            speakIt(text);
+        }
+
+    </script>
+    <style type="text/css">
+
+    </style>
 </head>
 <body>
+    <p class="action">Try it: <button onclick="speak();">Speak It</button></p>
     <div class="box">
         <header>
             <h1>Radioactive</h1>
