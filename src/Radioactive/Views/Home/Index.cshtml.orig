@@ -68,7 +68,8 @@
     </style>
 </head>
 <body>
-    <p class="action">Try it: <button onclick="start();">Speak It</button></p>
+<<<<<<< HEAD
+    <p class="action">Try it: <button onclick="speak();">Speak It</button></p>
     <div class="box">
         <header>
             <h1>Radioactive</h1>
@@ -81,5 +82,8 @@
         </section>
         <footer></footer>
     </div>
+=======
+    <p class="action">Try it: <button onclick="start();">Speak It</button></p>
+>>>>>>> promises!
 </body>
 </html>
