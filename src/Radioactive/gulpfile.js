@@ -1,4 +1,4 @@
-﻿/// <binding Clean='clean' />
+﻿/// <binding BeforeBuild='copy-assets' Clean='clean' />
 "use strict";
 
 var gulp = require("gulp"),
@@ -43,3 +43,14 @@ gulp.task("min:css", function () {
 });
 
 gulp.task("min", ["min:js", "min:css"]);
+
+
+gulp.task('copy-assets', function () {
+    var assets = {
+        js: [
+            './node_modules/requirejs/*.js'
+        ]
+    };
+
+    return gulp.src(assets.js).pipe(gulp.dest('./wwwroot/lib'));
+});
