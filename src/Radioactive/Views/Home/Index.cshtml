@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <title>Radioactive</title>
-    <link rel="stylesheet" type="text/css" href="~/css/normalize.css"/>
-    <link rel="stylesheet" type="text/css" href="~/css/site.css"/>
+    <link rel="stylesheet" type="text/css" href="~/css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/site.css" />
     <link href="http://fonts.googleapis.com/css?family=Open+Sans&amp;subset=latin" rel="stylesheet" type="text/css" />
     <link href="http://fonts.googleapis.com/css?family=Lato:300&amp;subset=latin" rel="stylesheet" type="text/css" />
     <script src="http://code.responsivevoice.org/responsivevoice.js"></script>
@@ -12,7 +12,7 @@
     <script type="text/javascript">
         var options = { rate: 1.5 };
         var voice = "Swedish Female";
-
+        var songs = [];
         var texts = {
             intro: [
                 "Radioactive, din kajplats i etern!",
@@ -21,7 +21,7 @@
             ],
             welcome: [
                 "Välkommen till Radioactive i Dublin",
-                "Årets konferans presenteras i sammarbete av Radioactive"
+                "Årets konferans presenteras i sammarbete med Radioactive"
             ],
             introSong: [
                 "Nästa låt som ska spelas är {song} som framförs av {artist}!"
@@ -33,7 +33,7 @@
         }
 
         function speakIt(text) {
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 var opt = {};
                 $.extend(opt, options, { onend: resolve });
                 responsiveVoice.speak(text, voice, opt);
@@ -56,19 +56,25 @@
         }
 
         function start() {
+            startPlayer();
 
             speak(texts.intro)
                 .then(function() {
                     return speak(texts.welcome);
+                })
+                .then(function () {
+                    for (var i = 0; i < songs.length; i++) {
+                        speakSong(songs[i].artistName, songs[i].name).then(function() {
+                            return playUrl(songs[i].url);
+                        });
+                    }
                 });
         }
 
         // spotify
         var result;
-        var trackstoplay = [];
-        var imagesToShow = [];
-        var tracksResult;
-        function StartPlayer() {
+
+        function startPlayer() {
 
             /*
             audioObject = null;
@@ -79,50 +85,48 @@
 
            */
 
-            searchAlbums('abba').then(function (result) {
+            var searchTracks = function (query) {
+                return $.ajax({
+                    url: 'https://api.spotify.com/v1/search',
+                    data: {
+                        q: query,
+                        type: 'track'
+                    }
+                });
+            };
 
-                if (result != null && result.albums != null) {
-                    result.albums.items.forEach(function (item) {
-
-                        fetchTracks(item.id).then(function (tracksResult) {
-
-                            trackstoplay.push(tracksResult.tracks.items[0].preview_url);
-                            imagesToShow.push(item.images[1].url);
-                        });
-
-                    });
-                }
-            });
-            //	alert(result);
+            searchTracks('dublin').then(function(result) {
+                result.tracks.items.forEach(function(item) {
+                    var song = {
+                        url: item.preview_url,
+                        image: item.album.images[1].url,
+                        name: item.name,
+                        artistName: item.artists[0].name
+                    };
+                    songs.push(song);
+                });
+            }).done(function(){console.log(songs);});
         }
-        var fetchTracks = function (albumId) {
-            return $.ajax({
-                url: 'https://api.spotify.com/v1/albums/' + albumId,
-                success: function (response) {
-                    tracksResult = response;
-                }
-            });
-        };
 
-        var searchAlbums = function (query) {
-            return $.ajax({
-                url: 'https://api.spotify.com/v1/search',
-                data: {
-                    q: query,
-                    type: 'album'
-                },
-                success: function (response) {
-                    result = response;
-
+        function playUrl(url) {
+            var promise = new Promise(function(resolve) {
+                var audioObject = new Audio("https://p.scdn.co/mp3-preview/07dbfe8eb7729d99a182b26fa1ec2f3467ba86f5");
+                audioObject.onended = function() {
+                    resolve();
                 }
+                audioObject.play();
             });
-        };
+
+            return promise;
+        }
+        
 
     </script>
 </head>
 <body>
-<p class="action">Try it: <button onclick="start();">Speak It</button>
-</p>
+    <p class="action">
+        Try it: <button onclick="start();">Speak It</button>
+    </p>
     <input value="Start" type="button" onclick="StartPlayer();" />
 
     <div class="box">
