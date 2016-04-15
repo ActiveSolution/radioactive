@@ -63,12 +63,68 @@
                 });
         }
 
+        // spotify
+        var result;
+        var trackstoplay = [];
+        var imagesToShow = [];
+        var tracksResult;
+        function StartPlayer() {
+
+            /*
+            audioObject = null;
+               audioObject = new Audio("https://p.scdn.co/mp3-preview/07dbfe8eb7729d99a182b26fa1ec2f3467ba86f5");
+                 audioObject.play();
+
+               document.getElementById('album_art').src="https://i.scdn.co/image/3ab3bf19102d17ee65ba07761a64cffd38e3fe47";
+
+           */
+
+            searchAlbums('abba').then(function (result) {
+
+                if (result != null && result.albums != null) {
+                    result.albums.items.forEach(function (item) {
+
+                        fetchTracks(item.id).then(function (tracksResult) {
+
+                            trackstoplay.push(tracksResult.tracks.items[0].preview_url);
+                            imagesToShow.push(item.images[1].url);
+                        });
+
+                    });
+                }
+            });
+            //	alert(result);
+        }
+        var fetchTracks = function (albumId) {
+            return $.ajax({
+                url: 'https://api.spotify.com/v1/albums/' + albumId,
+                success: function (response) {
+                    tracksResult = response;
+                }
+            });
+        };
+
+        var searchAlbums = function (query) {
+            return $.ajax({
+                url: 'https://api.spotify.com/v1/search',
+                data: {
+                    q: query,
+                    type: 'album'
+                },
+                success: function (response) {
+                    result = response;
+
+                }
+            });
+        };
+
     </script>
-    <style type="text/css">
-    </style>
 </head>
 <body>
-    <p class="action">Try it: <button onclick="start();">Speak It</button></p>
+<p class="action">Try it: <button onclick="start();">Speak It</button>
+</p>
+    <input value="Start" type="button" onclick="StartPlayer();" />
+
     <div class="box">
         <header>
             <h1>Radioactive</h1>
