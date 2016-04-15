@@ -8,8 +8,9 @@
     <link href="http://fonts.googleapis.com/css?family=Open+Sans&amp;subset=latin" rel="stylesheet" type="text/css" />
     <link href="http://fonts.googleapis.com/css?family=Lato:300&amp;subset=latin" rel="stylesheet" type="text/css" />
     <script src="http://code.responsivevoice.org/responsivevoice.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-        var options = { rate: 1.5};
+        var options = { rate: 1.5 };
         var voice = "Swedish Female";
 
         var texts = {
@@ -31,22 +32,43 @@
             return parts[Math.floor(Math.random() * parts.length)];
         }
 
-        function speakIt(text, callback) {
-            responsiveVoice.speak(text, voice, options);
+        function speakIt(text) {
+            return new Promise(function (resolve) {
+                var opt = {};
+                $.extend(opt, options, { onend: resolve });
+                responsiveVoice.speak(text, voice, opt);
+            });
+
         }
 
-        function speak() {
-            var text = getRandomPart(texts.intro);
-            speakIt(text);
+        function speakSong(artist, song) {
+            var text = getRandomPart(texts.introSong);
+
+            text = text.replace("{song}", song);
+            text = text.replace("{artist}", artist);
+
+            return speakIt(text);
+        }
+
+        function speak(parts) {
+            var text = getRandomPart(parts);
+            return speakIt(text);
+        }
+
+        function start() {
+
+            speak(texts.intro)
+                .then(function() {
+                    return speak(texts.welcome);
+                });
         }
 
     </script>
     <style type="text/css">
-
     </style>
 </head>
 <body>
-    <p class="action">Try it: <button onclick="speak();">Speak It</button></p>
+    <p class="action">Try it: <button onclick="start();">Speak It</button></p>
     <div class="box">
         <header>
             <h1>Radioactive</h1>
