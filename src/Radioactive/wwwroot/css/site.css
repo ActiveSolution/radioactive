@@ -8,6 +8,16 @@ body {
     color: white;
 }
 
+h1 {
+    display: inline-block;
+    margin-left: 15px;
+    font-size: 3em;
+}
+
+button {
+    vertical-align: text-bottom;
+}
+
 .box {
     display: flex;
     flex-flow: column;
