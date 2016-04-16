@@ -69,12 +69,20 @@
 
         speakSong(currentSong.artistName, currentSong.name)
             .then(function () {
+                setAlbumArtAndTrackName(currentSong.image, currentSong.artistName, currentSong.name);
                 player.play(currentSong.url)
                     .then(function () {
                         songs.shift();
                         newSongLoop(songs);
                     });
             });
+    }
+
+    function setAlbumArtAndTrackName(albumArtUrl, artistName, trackName) {
+        document.getElementById('album-art').src = albumArtUrl;
+        document.getElementById('track-name').innerHTML = trackName;
+        document.getElementById('artist-name').innerHTML = artistName;
+
     }
 
 
