@@ -53,17 +53,54 @@
         return speakIt(text);
     }
 
+    var fetchWeather = function (city, country) {
+        return $.ajax({
+            url: 'https://query.yahooapis.com/v1/public/yql?q=select%20item.condition.text%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22Dublin%2C%20Ireland%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys'
+        });
+    }
+
+
+    var translate = function (translateText) {
+        return $.ajax({
+            url: 'https://translate.googleapis.com/translate_a/t?client=gtx&sl=en&tl=sv&dt=t&q=' + encodeURIComponent(translateText),
+            dataType: 'text'
+        });
+    };
+
     function start() {
         spotify.search("dublin")
-            .then(function (songs) {
-                speak(texts.intro)
-                    .then(function () {
-                        return speak(texts.welcome);
-                    })
-                    .then(function () {
-                        newSongLoop(songs);
-                    });
+        .then(function (songs) {
+            speak(texts.intro)
+            .then(function () {
+                return speak(texts.welcome);
+            })
+            .then(function () {
+               return fetchWeather('Dublin', 'Ireland')
+                    .then(function (result) {
+                        return translate(result.query.results.channel.item.condition.text).then(function (translated) {
+                            return speakIt('Idag är vädret ' + translated + ' här i Dublin');
+                        });
+                 });
+            })
+            .then(function () {
+                newSongLoop(songs);
             });
+    });
+
+
+
+
+
+        //spotify.search("dublin")
+        //    .then(function (songs) {
+        //        speak(texts.intro)
+        //            .then(function () {
+        //                return speak(texts.welcome);
+        //            })
+        //            .then(function () {
+        //                newSongLoop(songs);
+        //            });
+        //    });
     }
 
     function newSongLoop(songs) {
@@ -92,6 +129,10 @@
         document.getElementById('artist-name').innerHTML = artistName;
 
     }
+
+
+
+
 
 
     return {
